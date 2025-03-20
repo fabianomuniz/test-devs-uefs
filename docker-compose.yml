@@ -1,0 +1,70 @@
+version: '3.9'
+
+networks:
+  laravel:
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: laravel_nginx
+    volumes:
+      - ./backend:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8000:80"
+    networks:
+      - laravel
+
+  db:
+    image: postgres:14
+    container_name: laravel_pgsql
+    environment:
+      POSTGRES_DB: laravel_db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    networks:
+      - laravel
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/var/www/html
+    container_name: laravel_php
+    expose:
+      - "9000"
+    networks:
+      - laravel
+
+  composer:
+    image: composer:latest
+    container_name: laravel_composer
+    volumes:
+      - ./backend:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - db
+      - php
+    networks:
+      - laravel
+
+  react:
+    image: node:latest
+    container_name: laravel_react
+    working_dir: /app
+    user: "root"
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    command: ["sh", "-c", "chmod -R 777 /app && npm install && npm run build && npm start"]
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - NODE_OPTIONS=--openssl-legacy-provider
+    networks:
+      - laravel
+
+
