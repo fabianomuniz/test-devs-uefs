@@ -1,3 +1,20 @@
+# Documentação do Ambiente e Execução do Projeto
+Este projeto utiliza Laravel 10 no backend e React 19 no frontend e banco PostgreSQL, com orquestração de containers via Docker. Siga as instruções abaixo para configurar e executar o ambiente localmente:
+
+1. No diretório raiz do projeto, execute o seguinte comando para iniciar os containers:
+
+**docker-compose up --build**
+
+2. Após o ambiente estar ativo, acesse o container Laravel (PHP):
+
+**docker exec -it laravel_php bash**
+
+3. Dentro do container, aplique as migrações para configurar o banco de dados PostgreSQL:
+
+**php artisan migrate**
+
+
+
 # Teste Técnico para a vaga de Engenheiro de Software no projeto UEFS - Avansys/ACP Group
 
 Este desafio técnico é destinado aos candidatos à posição de Engenheiro de Software no projeto UEFS - Avansys/ACP Group. O objetivo é avaliar as competências em desenvolvimento de software através da criação de uma API Restful utilizando PHP, Laravel (versão 8 ou superior), um Sistema de Gerenciamento de Banco de Dados (SGBD) de sua escolha, e Docker. O prazo para a realização deste teste é de 5 dias, e a entrega deve ser feita por meio do GitHub para análise.

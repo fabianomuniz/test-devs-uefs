@@ -17,6 +17,8 @@ const PostModal = ({ showModal, handleClose, postEditado }) => {
   const [posts, setPosts] = useState([]);
   const [showPostModal, setShowPostModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [postSelecionado, setPostSelecionado] = useState(null);
 
   useEffect(() => {
     const carregarUsuarios = async () => {
@@ -113,8 +115,25 @@ const PostModal = ({ showModal, handleClose, postEditado }) => {
     );
   };
 
+  const handleShowDeleteModal = (post) => {
+    setPostSelecionado(post);
+    setShowDeleteModal(true);
+  };
+
+  const confirmarExclusao = async () => {
+    if (!postSelecionado) return;
+
+    try {
+      await api.delete(`/api/post/${postSelecionado.id}`);
+      setPosts(posts.filter((p) => p.id !== postSelecionado.id));
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error("Erro ao excluir post:", error);
+    }
+  };
+
   return (
-    <div  className="container mt-4">
+    <div className="container mt-4">
       <Button className="mb-3" variant="primary" onClick={() => setShowPostModal(true)}>
         Novo Post
       </Button>
@@ -129,19 +148,17 @@ const PostModal = ({ showModal, handleClose, postEditado }) => {
           </tr>
         </thead>
         <tbody>
-          {posts.map((post) => {
-            return (
-              <tr key={post.id}>
-                <td>{post.title}</td>
-                <td>{post.name}</td>
-                <td>{new Date(post.created_at).toLocaleDateString()}</td>
-                <td>
-                  <Button variant="warning" size="sm" className="me-2">Editar</Button>
-                  <Button variant="danger" size="sm">Excluir</Button>
-                </td>
-              </tr>
-            );
-          })}
+          {posts.map((post) => (
+            <tr key={post.id}>
+              <td>{post.title}</td>
+              <td>{post.name}</td>
+              <td>{new Date(post.created_at).toLocaleDateString()}</td>
+              <td>
+                <Button variant="warning" size="sm" className="me-2">Editar</Button>
+                <Button variant="danger" size="sm" onClick={() => handleShowDeleteModal(post)}>Excluir</Button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </Table>
 
@@ -221,6 +238,22 @@ const PostModal = ({ showModal, handleClose, postEditado }) => {
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowPostModal(false)}>
             Fechar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal de exclusão */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar Exclusão</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Tem certeza que deseja excluir o post "{postSelecionado?.title}"?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancelar
+          </Button>
+          <Button variant="danger" onClick={confirmarExclusao}>
+            Excluir
           </Button>
         </Modal.Footer>
       </Modal>

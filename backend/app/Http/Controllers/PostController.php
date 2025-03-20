@@ -13,7 +13,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        return Post::select('posts.title', 'posts.created_at', 'users.name')
+        return Post::select('posts.id', 'posts.title', 'posts.created_at', 'users.name')
         ->join('users', 'users.id', '=', 'posts.user_id')
         ->orderBy('posts.created_at', 'desc') 
         ->get();
@@ -21,10 +21,9 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+
         // Certifique-se de que o campo tags seja um array, caso contrário, defina como array vazio
         $tags = $request->has('tags') ? $request->tags : [];
-
-        // dd($tags);
     
         $post = Post::create([
             'user_id' => $request->user_id,
@@ -57,13 +56,15 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post) 
+    public function delete($id) 
     { 
+        $post = Post::find($id);
+
         try {
             $post->delete();
-            return response()->json(['message' => 'Post excluída com sucesso!'], 200);
+            return response()->json(['message' => 'Tag excluída com sucesso!'], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Erro ao excluir o Post.'], 500);
+            return response()->json(['error' => 'Erro ao excluir a Tag.'], 500);
         }
     }
 }
