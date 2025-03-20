@@ -47,10 +47,16 @@ class TagController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Tag $tag) 
+    public function update(Request $request, $id) 
     { 
-        $tag->update($request->all()); 
-        return $tag; 
+        $tag = Tag::findOrFail($id);
+
+        $tag->update([
+            'name' => $request->name, 
+        ]);
+    
+        return response()->json($tag, 200);
+
     }
 
     /**
