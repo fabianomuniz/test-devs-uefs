@@ -34,6 +34,6 @@ Route::delete('/post/{id}', [PostController::class, 'delete']);
 
 //tags
 Route::get('/tags', [TagController::class, 'index']);
-Route::post('/tag/insert', [TagController::class, 'store']);
+Route::post('/tags/insert', [TagController::class, 'store']);
 Route::post('/tags/update/{id}', [TagController::class, 'update']);
 Route::delete('/tag/{id}', [TagController::class, 'delete']);
