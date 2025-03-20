@@ -5,6 +5,8 @@ import { useApiService } from "../../services/api";
 const Listagem = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const [showModalExcluir, setShowModalExcluir] = useState(false); // Estado para controlar o modal de exclusão
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
@@ -105,6 +107,11 @@ const Listagem = () => {
     }
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = usuarios.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(usuarios.length / itemsPerPage);
+
   return (
     <div>
       <h2>Listagem de Usuários</h2>
@@ -118,6 +125,7 @@ const Listagem = () => {
           <p>Carregando dados...</p>
         </div>
       ) : (
+        <>
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -127,7 +135,7 @@ const Listagem = () => {
             </tr>
           </thead>
           <tbody>
-            {usuarios.map((usuario) => (
+            {currentItems.map((usuario) => (
               <tr key={usuario.id}>
                 <td>{usuario.name}</td>
                 <td>{usuario.email}</td>
@@ -146,6 +154,14 @@ const Listagem = () => {
             ))}
           </tbody>
         </Table>
+        <Pagination className="justify-content-center">
+        {[...Array(totalPages).keys()].map((number) => (
+          <Pagination.Item key={number + 1} active={number + 1 === currentPage} onClick={() => setCurrentPage(number + 1)}>
+            {number + 1}
+          </Pagination.Item>
+        ))}
+      </Pagination>
+      </>
       )}
 
       {/* Modal de Cadastro/Edição */}
