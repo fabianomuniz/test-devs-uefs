@@ -20,7 +20,21 @@ class TagController extends Controller
      */
     public function store(Request $request) 
     { 
-        return Tag::create($request->all()); 
+
+        dd($request);
+        $request->validate([
+        'name' => 'required|string|max:255',
+        
+        ]);
+
+       
+        $tag = Tag::create([
+            'name' => $request->name,  
+            
+        ]);
+
+        
+        return response()->json($tag, 201); 
     }
 
     /**

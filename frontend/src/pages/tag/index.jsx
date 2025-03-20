@@ -44,9 +44,9 @@ const ListagemTags = () => {
   const handleSalvar = async () => {
     try {
       if (tagAtual.id) {
-        await api.put(`/api/tags/${tagAtual.id}`, { name: tagAtual.name });
+        await api.post(`/api/tags/update/${tagAtual.id}`, { name: tagAtual.name });
       } else {
-        await api.post("/api/tags", { name: tagAtual.name });
+        await api.post("/api/tags/insert", { name: tagAtual.name });
       }
       carregarTags();
       setShowModal(false);

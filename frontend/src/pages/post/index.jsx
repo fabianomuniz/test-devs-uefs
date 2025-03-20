@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form, Alert, Table, Badge } from "react-bootstrap";
+import { Modal, Button, Form, Alert, Table, Badge, Pagination } from "react-bootstrap";
 import { useApiService } from "../../services/api";
 
 const PostModal = ({ showModal, handleClose, postEditado }) => {
@@ -19,6 +19,10 @@ const PostModal = ({ showModal, handleClose, postEditado }) => {
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [postSelecionado, setPostSelecionado] = useState(null);
+
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 5;
 
   useEffect(() => {
     const carregarUsuarios = async () => {
@@ -132,6 +136,14 @@ const PostModal = ({ showModal, handleClose, postEditado }) => {
     }
   };
 
+  // Paginação: Calcular posts atuais
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
+  // Mudar de página
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <div className="container mt-4">
       <Button className="mb-3" variant="primary" onClick={() => setShowPostModal(true)}>
@@ -148,7 +160,7 @@ const PostModal = ({ showModal, handleClose, postEditado }) => {
           </tr>
         </thead>
         <tbody>
-          {posts.map((post) => (
+          {currentPosts.map((post) => (
             <tr key={post.id}>
               <td>{post.title}</td>
               <td>{post.name}</td>
@@ -161,6 +173,19 @@ const PostModal = ({ showModal, handleClose, postEditado }) => {
           ))}
         </tbody>
       </Table>
+
+      {/* Paginação */}
+      <Pagination>
+        {Array.from({ length: Math.ceil(posts.length / postsPerPage) }, (_, index) => (
+          <Pagination.Item
+            key={index + 1}
+            active={index + 1 === currentPage}
+            onClick={() => paginate(index + 1)}
+          >
+            {index + 1}
+          </Pagination.Item>
+        ))}
+      </Pagination>
 
       <Modal show={showPostModal} onHide={() => setShowPostModal(false)}>
         <Modal.Header closeButton>
