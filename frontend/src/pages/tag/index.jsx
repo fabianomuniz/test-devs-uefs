@@ -10,7 +10,7 @@ const ListagemTags = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [tagAtual, setTagAtual] = useState({ id: null, name: "" });
-  const itemsPerPage = 50;
+  const itemsPerPage = 10;
 
   const api = useApiService();
 
@@ -77,6 +77,10 @@ const ListagemTags = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentTags = tags.slice(indexOfFirstItem, indexOfLastItem);
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="container mt-4">
       <h2>Listagem de Tags</h2>
@@ -124,6 +128,27 @@ const ListagemTags = () => {
               )}
             </tbody>
           </Table>
+
+          {/* Paginação */}
+          <Pagination>
+            <Pagination.Prev
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+            />
+            {[...Array(totalPages).keys()].map((pageNumber) => (
+              <Pagination.Item
+                key={pageNumber + 1}
+                active={pageNumber + 1 === currentPage}
+                onClick={() => handlePageChange(pageNumber + 1)}
+              >
+                {pageNumber + 1}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+            />
+          </Pagination>
         </>
       )}
 
