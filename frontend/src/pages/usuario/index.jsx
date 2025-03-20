@@ -5,11 +5,13 @@ import { useApiService } from "../../services/api";
 const Listagem = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showModalExcluir, setShowModalExcluir] = useState(false); // Estado para controlar o modal de exclusão
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [erro, setErro] = useState("");
   const [mensagem, setMensagem] = useState(""); // Estado para exibir mensagens de sucesso
   const [usuarioEditado, setUsuarioEditado] = useState(null);
+  const [usuarioExcluir, setUsuarioExcluir] = useState(null); // Armazenar o usuário a ser excluído
   const [loading, setLoading] = useState(true); // Estado para exibir "Carregando dados..."
   const [saving, setSaving] = useState(false); // Estado para indicar que os dados estão sendo salvos
   const api = useApiService();
@@ -41,6 +43,12 @@ const Listagem = () => {
     setUsuarioEditado(null);
   };
 
+  // Fechar modal de exclusão
+  const handleCloseExcluir = () => {
+    setShowModalExcluir(false);
+    setUsuarioExcluir(null);
+  };
+
   // Abrir modal para cadastro ou edição
   const handleShow = (usuario = null) => {
     setMensagem(""); // Limpar mensagens antigas
@@ -51,6 +59,21 @@ const Listagem = () => {
       setEmail(usuario.email);
     }
     setShowModal(true);
+  };
+
+  // Função para excluir o usuário
+  const handleExcluir = async () => {
+    if (!usuarioExcluir) return;
+    
+    try {
+      await api.delete(`/api/usuario/delete/${usuarioExcluir.id}`);
+      setMensagem("Usuário excluído com sucesso!");
+      carregarUsuarios(); // Atualiza a lista de usuários após exclusão
+    } catch (error) {
+      setErro("Erro ao excluir o usuário.");
+    } finally {
+      handleCloseExcluir(); // Fecha o modal de exclusão
+    }
   };
 
   // Enviar dados para API (Cadastro ou Edição)
@@ -112,7 +135,12 @@ const Listagem = () => {
                   <button className="btn btn-success me-2" onClick={() => handleShow(usuario)}>
                     Editar
                   </button>
-                  <button className="btn btn-danger">Excluir</button>
+                  <button 
+                    className="btn btn-danger" 
+                    onClick={() => { setUsuarioExcluir(usuario); setShowModalExcluir(true); }}
+                  >
+                    Excluir
+                  </button>
                 </td>
               </tr>
             ))}
@@ -156,6 +184,20 @@ const Listagem = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>Fechar</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal de Exclusão */}
+      <Modal show={showModalExcluir} onHide={handleCloseExcluir}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar Exclusão</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Você tem certeza que deseja excluir este usuário?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseExcluir}>Cancelar</Button>
+          <Button variant="danger" onClick={handleExcluir}>Excluir</Button>
         </Modal.Footer>
       </Modal>
     </div>
