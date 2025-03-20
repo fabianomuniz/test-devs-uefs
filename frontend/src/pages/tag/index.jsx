@@ -10,7 +10,7 @@ const ListagemTags = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [tagAtual, setTagAtual] = useState({ id: null, name: "" });
-  const itemsPerPage = 10;
+  const itemsPerPage = 50;
 
   const api = useApiService();
 
